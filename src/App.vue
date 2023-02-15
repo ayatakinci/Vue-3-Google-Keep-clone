@@ -7,6 +7,7 @@ const notes = ref([])
 const editingIndex = ref(-1);
 const editNoteText = ref("");
 const editModalShow = ref(false);
+const previewNote = ref(null);
 
 function getRandomColor() {
   const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
@@ -29,11 +30,11 @@ const deleteNote = (index) => {
 };
 
 const editNoteModal = (index) => {
-  editingIndex.value = index; editNoteModal
+  editingIndex.value = index;
   editNoteText.value = notes.value[index].text;
   editModalShow.value = true;
+  previewNote.value = null;
 };
-
 
 const saveNote = () => {
   notes.value[editingIndex.value].text = editNoteText.value;
@@ -41,22 +42,29 @@ const saveNote = () => {
   editNoteText.value = "";
   editModalShow.value = false;
 };
-const editedNote = ref("");
+
 </script>
 
 <template>
   <main>
-    <div v-if="showModal || editModalShow" class="overlay" @click="editModalShow = false">
+    <div v-if="showModal || editModalShow || previewNote" class="overlay"
+      @click="showModal = false; editModalShow = false; previewNote = null">
       <div class="modal" @click.stop>
-        <p v-if="!editModalShow" @click="showModal = false">x</p>
-        <p v-else @click="editModalShow = false">x</p>
-        <template v-if="!editModalShow">
+        <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
+        <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
+        <template v-if="!editModalShow && !previewNote">
           <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
           <button @click="addNote">Add Note</button>
         </template>
-        <template v-else>
+        <template v-else-if="editModalShow">
           <textarea v-model="editNoteText"></textarea>
           <button @click="saveNote">Save</button>
+        </template>
+        <template v-else>
+          <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
+            <p class="main-text">{{ previewNote.text }}</p>
+            <p class="date">{{ previewNote.date.toLocaleDateString("en-US") }}</p>
+          </div>
         </template>
       </div>
     </div>
@@ -66,7 +74,8 @@ const editedNote = ref("");
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }">
+        <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }"
+          @click="previewNote = note">
           <p class="main-text">{{ note.text }}</p>
           <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
           <div class="buttons-container">
@@ -78,7 +87,6 @@ const editedNote = ref("");
     </div>
   </main>
 </template>
-
 
 
 
