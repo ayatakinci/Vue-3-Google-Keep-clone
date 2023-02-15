@@ -1,37 +1,73 @@
+<script setup>
+import { ref } from "vue";
+
+const showModal = ref(false);
+const newNote = ref("");
+const notes = ref([]);
+
+function getRandomColor() {
+  const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+  return color;
+}
+
+const addNote = () => {
+  notes.value.push({
+    id: Math.floor(Math.random() * 100000),
+    text: newNote.value,
+    color: getRandomColor(),
+    date: new Date(),
+  });
+  showModal.value = false;
+  newNote.value = "";
+};
+
+const deleteNote = (id) => {
+  const index = notes.value.findIndex((note) => note.id === id);
+  if (index !== -1) {
+    notes.value.splice(index, 1);
+  }
+};
+</script>
+
 <template>
   <main>
     <div v-if="showModal" class="overlay">
       <div class="modal">
-        <p @click="showModal=false">x</p>
-        <textarea v-model="newNote"></textarea>
+        <p @click="showModal = false">x</p>
+        <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
         <button @click="addNote">Add Note</button>
       </div>
     </div>
     <div class="container">
       <header>
         <h1>Notes</h1>
-        <button @click="showModal=true">+</button>
+        <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div v-for="note in notes" class="card" :style="backgroundColor:note.color">
+        <div v-for="note in notes" class="card" :style="{ backgroundColor: note.color }">
           <p class="main-text">{{ note.text }}</p>
-          <p class="date">{{ note.date.toLocalDateString("en-us") }}</p>
+          <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
+          <button @click="deleteNote(note.id)">Delete</button>
         </div>
       </div>
     </div>
   </main>
 </template>
+
+
 <style scoped>
 .container {
   max-width: 1000px;
   padding: 10px;
-  margin: 0 auto
+  margin: 0 auto;
+  color:black;
 }
 
 h1 {
   font-weight: bold;
   margin-bottom: 25px;
   font-size: 75px;
+  color: white;
 }
 
 .card {
