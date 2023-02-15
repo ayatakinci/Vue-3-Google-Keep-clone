@@ -1,9 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { ref } from "vue"
 
-const showModal = ref(false);
-const newNote = ref("");
-const notes = ref([]);
+const showModal = ref(false)
+const newNote = ref("")
+const notes = ref([])
+const editingIndex = ref(-1);
+const editNoteText = ref("");
+const editModalShow = ref(false);
 
 function getRandomColor() {
   const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
@@ -15,27 +18,46 @@ const addNote = () => {
     id: Math.floor(Math.random() * 100000),
     text: newNote.value,
     color: getRandomColor(),
-    date: new Date(),
-  });
+    date: new Date()
+  })
   showModal.value = false;
-  newNote.value = "";
+  newNote.value = ""
+}
+
+const deleteNote = (index) => {
+  notes.value.splice(index, 1);
 };
 
-const deleteNote = (id) => {
-  const index = notes.value.findIndex((note) => note.id === id);
-  if (index !== -1) {
-    notes.value.splice(index, 1);
-  }
+const editNoteModal = (index) => {
+  editingIndex.value = index; editNoteModal
+  editNoteText.value = notes.value[index].text;
+  editModalShow.value = true;
 };
+
+
+const saveNote = () => {
+  notes.value[editingIndex.value].text = editNoteText.value;
+  editingIndex.value = -1;
+  editNoteText.value = "";
+  editModalShow.value = false;
+};
+const editedNote = ref("");
 </script>
 
 <template>
   <main>
-    <div v-if="showModal" class="overlay">
-      <div class="modal">
-        <p @click="showModal = false">x</p>
-        <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
-        <button @click="addNote">Add Note</button>
+    <div v-if="showModal || editModalShow" class="overlay" @click="editModalShow = false">
+      <div class="modal" @click.stop>
+        <p v-if="!editModalShow" @click="showModal = false">x</p>
+        <p v-else @click="editModalShow = false">x</p>
+        <template v-if="!editModalShow">
+          <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
+          <button @click="addNote">Add Note</button>
+        </template>
+        <template v-else>
+          <textarea v-model="editNoteText"></textarea>
+          <button @click="saveNote">Save</button>
+        </template>
       </div>
     </div>
     <div class="container">
@@ -44,15 +66,20 @@ const deleteNote = (id) => {
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div v-for="note in notes" class="card" :style="{ backgroundColor: note.color }">
+        <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }">
           <p class="main-text">{{ note.text }}</p>
           <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
-          <button @click="deleteNote(note.id)">Delete</button>
+          <div class="buttons-container">
+            <button @click="editNoteModal(index)">Edit</button>
+            <button @click="deleteNote(index)">Delete</button>
+          </div>
         </div>
       </div>
     </div>
   </main>
 </template>
+
+
 
 
 <style scoped>
