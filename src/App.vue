@@ -8,6 +8,7 @@ const editingIndex = ref(-1);
 const editNoteText = ref("");
 const editModalShow = ref(false);
 const previewNote = ref(null);
+const isPinned = ref(false);
 
 function getRandomColor() {
   const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
@@ -45,6 +46,10 @@ const saveNote = () => {
   editModalShow.value = false;
   previewNote.value = null; // reset previewNote
 };
+const togglePinned = (index) => {
+  notes.value[index].isPinned = !notes.value[index].isPinned;
+};
+
 
 </script>
 
@@ -80,8 +85,10 @@ const saveNote = () => {
           <button @click="showModal = true">+</button>
         </header>
         <div class="cards-container">
-          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }"
+          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: note.isPinned }"
             @click="previewNote = note">
+              <button  @click="togglePinned(index)">Pin</button>
+
             <p class="main-text">{{ note.text }}</p>
             <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
             <div class="buttons-container">
@@ -214,5 +221,10 @@ textarea {
   height: 200px;
   padding: 5px;
   font-size: 20px;
+}
+
+.pinned {
+ 
+  border: 3px solid gold;
 }
 </style>
