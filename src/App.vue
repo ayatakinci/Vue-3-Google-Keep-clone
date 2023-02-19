@@ -47,7 +47,10 @@ const saveNote = () => {
   previewNote.value = null; // reset previewNote
 };
 const togglePinned = (index) => {
-  notes.value[index].isPinned = !notes.value[index].isPinned;
+  isPinned.value = !isPinned.value;
+  const note = notes.value[index];
+  notes.value.splice(index, 1);
+  notes.value.unshift(note);
 };
 
 
@@ -85,7 +88,7 @@ const togglePinned = (index) => {
           <button @click="showModal = true">+</button>
         </header>
         <div class="cards-container">
-          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: note.isPinned }"
+          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: isPinned && index === 0 }"
             @click="previewNote = note">
               <button  @click="togglePinned(index)">Pin</button>
 
