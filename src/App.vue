@@ -22,18 +22,20 @@ const addNote = () => {
     date: new Date()
   })
   showModal.value = false;
-  newNote.value = ""
+  newNote.value = "";
 }
 
 const deleteNote = (index) => {
   notes.value.splice(index, 1);
+  previewNote.value = null; // reset previewNote
+  editModalShow.value = false; // hide edit modal if it's open for the deleted note
 };
 
 const editNoteModal = (index) => {
   editingIndex.value = index;
   editNoteText.value = notes.value[index].text;
   editModalShow.value = true;
-  previewNote.value = null;
+  previewNote.value = null; // reset previewNote
 };
 
 const saveNote = () => {
@@ -41,46 +43,54 @@ const saveNote = () => {
   editingIndex.value = -1;
   editNoteText.value = "";
   editModalShow.value = false;
+  previewNote.value = null; // reset previewNote
 };
 
 </script>
 
 <template>
-  <main>
-    <div v-if="showModal || editModalShow || previewNote" class="overlay"
-      @click="showModal = false; editModalShow = false; previewNote = null">
-      <div class="modal" @click.stop>
-        <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
-        <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
-        <template v-if="!editModalShow && !previewNote">
-          <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
-          <button @click="addNote">Add Note</button>
-        </template>
-        <template v-else-if="editModalShow">
-          <textarea v-model="editNoteText"></textarea>
-          <button @click="saveNote">Save</button>
-        </template>
-        <template v-else>
-          <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
-            <p class="main-text">{{ previewNote.text }}</p>
-            <p class="date">{{ previewNote.date.toLocaleDateString("en-US") }}</p>
-          </div>
-        </template>
+    <main>
+      <div v-if="showModal || editModalShow || previewNote" class="overlay"
+        @click="showModal = false; editModalShow = false; previewNote = null">
+        <div class="modal" @click.stop>
+          <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
+          <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
+          <template v-if="!editModalShow && !previewNote">
+            <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
+           
+            <button @click="addNote">Add Note</button>
+          </template>
+          <template v-else-if="editModalShow">
+            <textarea v-model="editNoteText"></textarea>
+            
+            <button @click="saveNote">Save</button>
+          </template>
+          <template v-else>
+            <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
+              <p class="main-text">{{ previewNote.text }}</p>
+              <p class="date">{{ previewNote.date.toLocaleDateString("en-US") }}</p>
+             
+            </div>
+          </template>
+        </div>
       </div>
-    </div>
-    <div class="container">
-      <header>
-        <h1>Notes</h1>
-        <button @click="showModal = true">+</button>
-      </header>
-      <div class="cards-container">
-        <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }"
-          @click="previewNote = note">
-          <p class="main-text">{{ note.text }}</p>
-          <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
+      <div class="container">
+        <header>
+          <h1>Notes</h1>
+          <button @click="showModal = true">+</button>
+        </header>
+        <div class="cards-container">
+          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color }"
+            @click="previewNote = note">
+            <p class="main-text">{{ note.text }}</p>
+            <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
+            <div class="buttons-container">
+             
+
           <div class="buttons-container">
             <button @click="editNoteModal(index)">Edit</button>
             <button @click="deleteNote(index)">Delete</button>
+            </div>
           </div>
         </div>
       </div>
