@@ -53,6 +53,28 @@ const togglePinned = (index) => {
   notes.value.unshift(note);
 };
 
+const showColorPicker = (event, index) => {
+  event.stopPropagation();
+  const colors = ["red", "white", "green"];
+  const colorPicker = document.createElement("div");
+  colorPicker.className = "color-picker";
+  colorPicker.style.left = event.pageX + "px";
+  colorPicker.style.top = event.pageY + "px";
+
+  colors.forEach((color) => {
+    const colorButton = document.createElement("button");
+    colorButton.className = "color-button";
+    colorButton.style.backgroundColor = color;
+    colorButton.addEventListener("click", () => {
+      notes.value[index].color = color;
+      colorPicker.remove();
+    });
+
+    colorPicker.appendChild(colorButton);
+  });
+
+  document.body.appendChild(colorPicker);
+};
 
 </script>
 
@@ -91,6 +113,14 @@ const togglePinned = (index) => {
           <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: isPinned && index === 0 }"
             @click="previewNote = note">
               <button  @click="togglePinned(index)">Pin</button>
+               <div class="change-color-container">
+             <button @click.stop="showChangeColorMenu(event, index)">Change color</button>
+              <div class="color-menu" v-show="selectedNoteIndex === index">
+                <div class="color-option red" @click="changeNoteColor(index, 'red')"></div>
+                <div class="color-option white" @click="changeNoteColor(index, 'white')"></div>
+                <div class="color-option green" @click="changeNoteColor(index, 'green')"></div>
+              </div>
+            </div>
 
             <p class="main-text">{{ note.text }}</p>
             <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
