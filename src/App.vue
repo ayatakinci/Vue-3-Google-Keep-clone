@@ -114,12 +114,13 @@ const showColorPicker = (event, index) => {
             @click="previewNote = note">
               <button  @click="togglePinned(index)">Pin</button>
                <div class="change-color-container">
-             <button @click.stop="showChangeColorMenu(event, index)">Change color</button>
-              <div class="color-menu" v-show="selectedNoteIndex === index">
-                <div class="color-option red" @click="changeNoteColor(index, 'red')"></div>
-                <div class="color-option white" @click="changeNoteColor(index, 'white')"></div>
-                <div class="color-option green" @click="changeNoteColor(index, 'green')"></div>
-              </div>
+    <button @click.stop="showColorPicker($event, index)">Change color</button>
+    <div class="color-menu" v-show="selectedNoteIndex === index">
+      <div class="color-option red" @click="changeNoteColor(index, 'red')"></div>
+      <div class="color-option white" @click="changeNoteColor(index, 'white')"></div>
+      <div class="color-option green" @click="changeNoteColor(index, 'green')"></div>
+    </div>
+  
             </div>
 
             <p class="main-text">{{ note.text }}</p>
@@ -139,7 +140,12 @@ const showColorPicker = (event, index) => {
 </template>
 
 
-
+<!--
+  ? this is a deneme
+  ! what do you think
+  * this is a deneme
+  todo:this is a todo
+ -->
 <style scoped>
 .container {
   max-width: 1000px;
