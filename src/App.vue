@@ -266,4 +266,36 @@ textarea {
  
   border: 3px solid gold;
 }
+.color-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  z-index: 999;
+}
+
+.color-option {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.color-option.red {
+  background-color: #ff0000;
+}
+
+.color-option.white {
+  background-color: #ffffff;
+}
+
+.color-option.green {
+  background-color: #00ff00;
+}
+
 </style>
