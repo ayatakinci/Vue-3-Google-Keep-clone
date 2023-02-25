@@ -58,8 +58,24 @@ const showColorPicker = (event, index) => {
   const colors = ["red", "white", "green"];
   const colorPicker = document.createElement("div");
   colorPicker.className = "color-picker";
-  colorPicker.style.left = event.pageX + "px";
-  colorPicker.style.top = event.pageY + "px";
+  colorPicker.style.top = "386px";
+  colorPicker.style.position = "absolute";
+  colorPicker.style.zIndex = "999";
+  colorPicker.style.display = "flex";
+  colorPicker.style.flexWrap = "wrap";
+  colorPicker.style.gap = "10px";
+  colorPicker.style.padding = "10px";
+  colorPicker.style.backgroundColor = "white";
+  colorPicker.style.border = "1px solid gray";
+  colorPicker.style.boxShadow = "2px 2px 10px rgba(0, 0, 0, 0.2)";
+
+  // Get the position of the clicked note relative to the top of the viewport
+  const noteRect = event.target.getBoundingClientRect();
+  const noteTop = noteRect.top + window.pageYOffset;
+
+  // Set the position of the color picker div to be below the clicked note
+  colorPicker.style.left = noteRect.left + "px";
+  colorPicker.style.top = noteTop + noteRect.height + "px";
 
   colors.forEach((color) => {
     const colorButton = document.createElement("button");
@@ -75,6 +91,8 @@ const showColorPicker = (event, index) => {
 
   document.body.appendChild(colorPicker);
 };
+
+
 
 </script>
 
@@ -114,14 +132,9 @@ const showColorPicker = (event, index) => {
             @click="previewNote = note">
               <button  @click="togglePinned(index)">Pin</button>
                <div class="change-color-container">
-    <button @click.stop="showColorPicker($event, index)">Change color</button>
-    <div class="color-menu" v-show="selectedNoteIndex === index">
-      <div class="color-option red" @click="changeNoteColor(index, 'red')"></div>
-      <div class="color-option white" @click="changeNoteColor(index, 'white')"></div>
-      <div class="color-option green" @click="changeNoteColor(index, 'green')"></div>
-    </div>
-  
-            </div>
+        <button @click.stop="showColorPicker($event, index)">Change color</button>
+        
+      </div>
 
             <p class="main-text">{{ note.text }}</p>
             <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
@@ -297,5 +310,15 @@ textarea {
 .color-option.green {
   background-color: #00ff00;
 }
-
+.color-picker {
+  position: absolute;
+  z-index: 999;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid gray;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
 </style>

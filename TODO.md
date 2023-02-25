@@ -6,21 +6,22 @@ Project Description
 
 ### Todo
 
+- [ ] refactor code compoentlere ayır  
 - [ ] css ile daha çok güzelleştir ve cssi düzelt  
-- [ ] fotoğraf upload edilebilir firebase?  
-- [ ] add authentication with firebase  
-- [ ] silinenler çöp kutusunda dursun  
-- [ ] arama yapılabilsin  
 - [ ] dark theme ekle  
+- [ ] arama yapılabilsin  
 - [ ] and make it stay on refresh use local storage  
+- [ ] add authentication with firebase  
+- [ ] fotoğraf upload edilebilir firebase?  
+- [ ] silinenler çöp kutusunda dursun  
+
+### In Progress
+
 - [ ] make a to do list feature inside the modal  
 - [ ] it show the preview modal every time i edit or delete the modal fix this  
 - [ ] make a pin feature (yapıldı ama pin eklenince review çıkıyor onu düzelt bide ikinci bir pin ekleyince ne oluyro diğer pinin yanında durmalı onu test et)  
 
-### In Progress
-
-- [ ] make the color changable(çalışmıyor current)  
-
 ### Done ✓
 
+- [x] make the color changable(div style düzelt)  
 
