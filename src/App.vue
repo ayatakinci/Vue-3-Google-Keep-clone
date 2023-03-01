@@ -9,6 +9,8 @@ const editNoteText = ref("");
 const editModalShow = ref(false);
 const previewNote = ref(null);
 const isPinned = ref(false);
+const newTodo = ref("")
+const todos = ref([])
 
 function getRandomColor() {
   const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
@@ -18,7 +20,8 @@ function getRandomColor() {
 const addNote = () => {
   notes.value.push({
     id: Math.floor(Math.random() * 100000),
-    text: newNote.value,
+    text: newTodo.value,
+      completed: false,
     color: getRandomColor(),
     date: new Date()
   })
@@ -92,7 +95,19 @@ const showColorPicker = (event, index) => {
   document.body.appendChild(colorPicker);
 };
 
+const addTodo = () => {
+  if (newTodo.value.trim() !== "") {
+    todos.value.push({
+      text: newTodo.value,
+      completed: false,
+    });
+    newTodo.value = "";
+  }
+};
 
+const toggleCompleted = (todo) => {
+  todo.completed = !todo.completed;
+};
 
 </script>
 
@@ -103,11 +118,20 @@ const showColorPicker = (event, index) => {
         <div class="modal" @click.stop>
           <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
           <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
-          <template v-if="!editModalShow && !previewNote">
-            <textarea v-model="newNote" @keydown.enter="addNote"></textarea>
-           
-            <button @click="addNote">Add Note</button>
-          </template>
+         <template v-if="!editModalShow && !previewNote">
+  <div>
+    <input type="text" v-model="newTodo" @keydown.enter="addTodo" placeholder="Add a to do item">
+    <ul>
+      <li v-for="(todo, index) in todos" :key="index">
+        <label :for="'checkbox-' + index">{{ todo.text }}</label>
+        <input type="checkbox" :id="'checkbox-' + index" v-model="todo.completed">
+        <button @click="deleteTodo(index)">Delete</button>
+      </li>
+    </ul>
+    <button @click="addNote">Add</button>
+  </div>
+</template>
+
           <template v-else-if="editModalShow">
             <textarea v-model="editNoteText"></textarea>
             
@@ -321,4 +345,34 @@ textarea {
   border: 1px solid gray;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
 }
+li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color:black
+}
+
+label {
+  margin-right: 10px;
+  flex-grow: 1;
+  text-decoration: none;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #fff;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+li.completed label {
+  text-decoration: line-through;
+  color: gray;
+}
+
 </style>
