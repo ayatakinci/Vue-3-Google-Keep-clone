@@ -42,11 +42,14 @@ const deleteNote = (index) => {
 
 const editNoteModal = (index) => {
   editingIndex.value = index;
-  editNoteText.value = notes.value[index].text;
-  editModalShow.value = true;
-  previewNote.value = null; // reset previewNote
-  todos.value = notes.value[index].todos || [];
+  if (notes.value[index]) {
+    editNoteText.value = notes.value[index].text;
+    todos.value = notes.value[index].todos || [];
+    editModalShow.value = true;
+    previewNote.value = null; // reset previewNote
+  }
 };
+
 
 const saveNote = () => {
   if (editingIndex.value >= 0 && editingIndex.value < notes.value.length) {
@@ -147,7 +150,7 @@ const addTodo =()=> {
         </template>
 
         <template v-else-if="editNoteModal(index)">
-  <textarea v-model="editNoteText"></textarea>
+  <textarea  v-model="editedNote.text"></textarea>
   <input v-model="todoInput" placeholder="Add a todo item">
   <button @click="addTodo">Add Todo</button>
   <ul>
