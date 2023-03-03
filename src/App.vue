@@ -49,14 +49,17 @@ const editNoteModal = (index) => {
 };
 
 const saveNote = () => {
-  notes.value[editingIndex.value].text = editNoteText.value;
-  notes.value[editingIndex.value].todos = todos.value;
-  editingIndex.value = -1;
-  editNoteText.value = "";
-  editModalShow.value = false;
-  previewNote.value = null; // reset previewNote
-  todos.value = [];
+  if (editingIndex.value >= 0 && editingIndex.value < notes.value.length) {
+    notes.value[editingIndex.value].text = editNoteText.value;
+    notes.value[editingIndex.value].todos = todos.value;
+    editingIndex.value = -1;
+    editNoteText.value = "";
+    editModalShow.value = false;
+    previewNote.value = null; // reset previewNote
+    todos.value = [];
+  }
 };
+
 
 const togglePinned = (index) => {
   isPinned.value = !isPinned.value;
@@ -143,10 +146,18 @@ const addTodo =()=> {
           </div>
         </template>
 
-        <template v-else-if="editModalShow">
-          <textarea v-model="editNoteText"></textarea>
-          <button @click="saveNote">Save</button>
-        </template>
+        <template v-else-if="editNoteModal(index)">
+  <textarea v-model="editNoteText"></textarea>
+  <input v-model="todoInput" placeholder="Add a todo item">
+  <button @click="addTodo">Add Todo</button>
+  <ul>
+    <li v-for="(todo, todoIndex) in todos">
+      {{ todo }}
+      <button @click="removeTodo(todoIndex)">X</button>
+    </li>
+  </ul>
+  <button @click="saveNote">Save</button>
+</template>
 
         <template v-else>
           <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
