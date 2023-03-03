@@ -1,16 +1,16 @@
 <script setup>
-import { ref } from "vue"
+import { ref } from "vue";
 
-const showModal = ref(false)
-const newNote = ref("")
-const notes = ref([])
+const showModal = ref(false);
+const newNote = ref("");
+const notes = ref([]);
 const editingIndex = ref(-1);
 const editNoteText = ref("");
 const editModalShow = ref(false);
 const previewNote = ref(null);
 const isPinned = ref(false);
-const newTodo = ref("")
-const todos = ref([])
+const newTodo = ref("");
+const todos = ref([]);
 
 function getRandomColor() {
   const color = "hsl(" + Math.random() * 360 + ", 100%, 75%)";
@@ -20,35 +20,44 @@ function getRandomColor() {
 const addNote = () => {
   notes.value.push({
     id: Math.floor(Math.random() * 100000),
-    text: newTodo.value,
-      completed: false,
+    text: newNote.value,
+    completed: false,
     color: getRandomColor(),
-    date: new Date()
+    date: new Date(),
+    todos: todos.value
   })
   showModal.value = false;
   newNote.value = "";
+  todos.value = [];
 }
+
 
 const deleteNote = (index) => {
   notes.value.splice(index, 1);
   previewNote.value = null; // reset previewNote
   editModalShow.value = false; // hide edit modal if it's open for the deleted note
+  todos.value = []; // remove todos for the deleted note
 };
+
 
 const editNoteModal = (index) => {
   editingIndex.value = index;
   editNoteText.value = notes.value[index].text;
   editModalShow.value = true;
   previewNote.value = null; // reset previewNote
+  todos.value = notes.value[index].todos || [];
 };
 
 const saveNote = () => {
   notes.value[editingIndex.value].text = editNoteText.value;
+  notes.value[editingIndex.value].todos = todos.value;
   editingIndex.value = -1;
   editNoteText.value = "";
   editModalShow.value = false;
   previewNote.value = null; // reset previewNote
+  todos.value = [];
 };
+
 const togglePinned = (index) => {
   isPinned.value = !isPinned.value;
   const note = notes.value[index];
@@ -92,87 +101,99 @@ const showColorPicker = (event, index) => {
     colorPicker.appendChild(colorButton);
   });
 
+
   document.body.appendChild(colorPicker);
 };
 
-const addTodo = () => {
-  if (newTodo.value.trim() !== "") {
-    todos.value.push({
-      text: newTodo.value,
-      completed: false,
-    });
-    newTodo.value = "";
-  }
-};
+
 
 const toggleCompleted = (todo) => {
   todo.completed = !todo.completed;
 };
+const addTodo =()=> {
+  if (newTodo.value.trim() !== "") {
+    todos.value.push({
+      text: newTodo.value,
+      completed: false
+    });
+    newTodo.value = "";
+  }
+}
+
 
 </script>
 
 <template>
-    <main>
-      <div v-if="showModal || editModalShow || previewNote" class="overlay"
-        @click="showModal = false; editModalShow = false; previewNote = null">
-        <div class="modal" @click.stop>
-          <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
-          <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
-         <template v-if="!editModalShow && !previewNote">
-  <div>
-    <input type="text" v-model="newTodo" @keydown.enter="addTodo" placeholder="Add a to do item">
-    <ul>
-      <li v-for="(todo, index) in todos" :key="index">
-        <label :for="'checkbox-' + index">{{ todo.text }}</label>
-        <input type="checkbox" :id="'checkbox-' + index" v-model="todo.completed">
-        <button @click="deleteTodo(index)">Delete</button>
-      </li>
-    </ul>
-    <button @click="addNote">Add</button>
-  </div>
-</template>
+  <main>
+    <div v-if="showModal || editModalShow || previewNote" class="overlay" @click="showModal = false; editModalShow = false; previewNote = null">
+      <div class="modal" @click.stop>
+        <p v-if="!editModalShow && !previewNote" @click="showModal = false">x</p>
+        <p v-else @click="showModal = false; editModalShow = false; previewNote = null">x</p>
+        <template v-if="!editModalShow && !previewNote">
+          <div>
+            <input type="text" v-model="newTodo" @keydown.enter="addTodo" placeholder="Add a to do item">
+            <ul>
+              <li v-for="(todo, index) in todos" :key="index">
+                <label :for="'checkbox-' + index">{{ todo.text }}</label>
+                <input type="checkbox" :id="'checkbox-' + index" v-model="todo.completed">
+                <button @click="deleteTodo(index)">Delete</button>
+              </li>
+            </ul>
+            <button @click="addNote">Add</button>
+          </div>
+        </template>
 
-          <template v-else-if="editModalShow">
-            <textarea v-model="editNoteText"></textarea>
-            
-            <button @click="saveNote">Save</button>
-          </template>
-          <template v-else>
-            <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
-              <p class="main-text">{{ previewNote.text }}</p>
-              <p class="date">{{ previewNote.date.toLocaleDateString("en-US") }}</p>
-             
-            </div>
-          </template>
-        </div>
+        <template v-else-if="editModalShow">
+          <textarea v-model="editNoteText"></textarea>
+          <button @click="saveNote">Save</button>
+        </template>
+
+        <template v-else>
+          <div class="preview-card" :style="{ backgroundColor: previewNote.color }">
+            <p class="main-text">{{ previewNote.text }}</p>
+            <p class="date">{{ previewNote.date.toLocaleDateString("en-US") }}</p>
+            <ul v-if="previewNote.todos">
+              <li v-for="(todo, index) in previewNote.todos" :key="index">
+                <label :for="'preview-checkbox-' + index">{{ todo.text }}</label>
+                <input type="checkbox" :id="'preview-checkbox-' + index" :checked="todo.completed" disabled>
+              </li>
+            </ul>
+          </div>
+        </template>
+
       </div>
-      <div class="container">
-        <header>
-          <h1>Notes</h1>
-          <button @click="showModal = true">+</button>
-        </header>
-        <div class="cards-container">
-          <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: isPinned && index === 0 }"
-            @click="previewNote = note">
-              <button  @click="togglePinned(index)">Pin</button>
-               <div class="change-color-container">
-        <button @click.stop="showColorPicker($event, index)">Change color</button>
-        
-      </div>
+    </div>
 
-            <p class="main-text">{{ note.text }}</p>
-            <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
-            <div class="buttons-container">
-             
+    <div class="container">
+      <header>
+        <h1>Notes</h1>
+        <button @click="showModal = true">+</button>
+      </header>
+      <div class="cards-container">
+        <div v-for="(note, index) in notes" class="card" :style="{ backgroundColor: note.color } "  :class="{ pinned: isPinned && index === 0 }"
+          @click="previewNote = note">
+          <button  @click="togglePinned(index)">Pin</button>
+          <div class="change-color-container">
+            <button @click.stop="showColorPicker($event, index)">Change color</button>
+          </div>
 
+          <p class="main-text">{{ note.text }}</p>
+          <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
+          <ul v-if="note.todos">
+            <li v-for="(todo, index) in note.todos" :key="index">
+              <label :for="'todo-checkbox-' + index">{{ todo.text }}</label>
+              <input type="checkbox" :id="'todo-checkbox-' + index" :checked="todo.completed" disabled>
+            </li>
+          </ul>
           <div class="buttons-container">
             <button @click="editNoteModal(index)">Edit</button>
             <button @click="deleteNote(index)">Delete</button>
-            </div>
           </div>
+       
+</div>
         </div>
       </div>
-    </div>
+
   </main>
 </template>
 
